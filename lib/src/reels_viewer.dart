@@ -1,9 +1,9 @@
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
-import 'package:reels_viewer/src/models/reel_model.dart';
-import 'package:reels_viewer/src/reels_page.dart';
+import 'package:flutter_reels/src/models/reel_model.dart';
+import 'package:flutter_reels/src/flutter_reels.dart';
 
-class ReelsViewer extends StatefulWidget {
+class FlutterReels extends StatefulWidget {
   /// use reel model and provide list of reels, list contains reels object, object contains url and other parameters
   final List<ReelModel> reelsList;
 
@@ -41,7 +41,7 @@ class ReelsViewer extends StatefulWidget {
   /// function invoke when user click on back btn
   final Function()? onClickBackArrow;
 
-  const ReelsViewer({
+  const FlutterReels({
     Key? key,
     required this.reelsList,
     this.showVerifiedTick = true,
@@ -58,10 +58,10 @@ class ReelsViewer extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ReelsViewer> createState() => _ReelsViewerState();
+  State<FlutterReels> createState() => _FlutterReelsState();
 }
 
-class _ReelsViewerState extends State<ReelsViewer> {
+class _FlutterReelsState extends State<FlutterReels> {
   SwiperController controller = SwiperController();
 
   @override

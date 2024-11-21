@@ -1,4 +1,4 @@
-# reels_viewer
+# flutter_reels
 
 [comment]: <> (<a href="https://www.buymeacoffee.com/hslbetto" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" alt="Buy Me A Beer" style="width: 150px !important;"></a>)
 
@@ -11,13 +11,13 @@ In the `pubspec.yaml` of your flutter project, add the following dependency:
 ```yaml
 dependencies:
   ...
-  reels_viewer: ^1.0.0
+  flutter_reels: ^1.0.0
 ```
 
 In your library add the following import:
 
 ```dart
-import 'package:reels_viewer/reels_viewer.dart';
+import 'package:flutter_reels/flutter_reels.dart';
 ```
 
 For help getting started with Flutter, view the online [documentation](https://flutter.io/).
@@ -129,7 +129,7 @@ ReelsViewer(
 
 ## Demo APK
 
-[Click here](https://github.com/patildarshan66/reels_viewer/blob/master/demo_apk/demo.apk) for download demo app.
+[Click here](https://github.com/patildarshan66/flutter_reels/blob/master/demo_apk/demo.apk) for download demo app.
 
 ## ScreenShots
 

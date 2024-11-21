@@ -1,8 +1,8 @@
 import 'package:card_swiper/card_swiper.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
-import 'package:reels_viewer/src/models/reel_model.dart';
-import 'package:reels_viewer/src/utils/url_checker.dart';
+import 'package:flutter_reels/src/models/reel_model.dart';
+import 'package:flutter_reels/src/utils/url_checker.dart';
 import 'package:video_player/video_player.dart';
 import 'components/like_icon.dart';
 import 'components/screen_options.dart';
@@ -41,15 +41,14 @@ class _ReelsPageState extends State<ReelsPage> {
   @override
   void initState() {
     super.initState();
-    if (!UrlChecker.isImageUrl(widget.item.url) &&
-        UrlChecker.isValid(widget.item.url)) {
+    if (UrlChecker.isValid(widget.item.url) && !UrlChecker.isImageUrl(widget.item.url)) {
       initializePlayer();
     }
   }
 
   Future initializePlayer() async {
     _videoPlayerController = VideoPlayerController.network(widget.item.url);
-    await Future.wait([_videoPlayerController.initialize()]);
+    await _videoPlayerController.initialize();
     _chewieController = ChewieController(
       videoPlayerController: _videoPlayerController,
       autoPlay: true,
@@ -58,8 +57,7 @@ class _ReelsPageState extends State<ReelsPage> {
     );
     setState(() {});
     _videoPlayerController.addListener(() {
-      if (_videoPlayerController.value.position ==
-          _videoPlayerController.value.duration) {
+      if (_videoPlayerController.value.position == _videoPlayerController.value.duration) {
         widget.swiperController.next();
       }
     });
@@ -67,7 +65,9 @@ class _ReelsPageState extends State<ReelsPage> {
 
   @override
   void dispose() {
-    _videoPlayerController.dispose();
+    if (_videoPlayerController != null) {
+      _videoPlayerController!.dispose();
+    }
     if (_chewieController != null) {
       _chewieController!.dispose();
     }
@@ -76,54 +76,51 @@ class _ReelsPageState extends State<ReelsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return getVideoView();
+    if (UrlChecker.isImageUrl(widget.item.url)) {
+      // If it's an image URL, return image view
+      return getImageView();
+    } else if (UrlChecker.isValid(widget.item.url) && !UrlChecker.isImageUrl(widget.item.url)) {
+      // If it's a video URL, return video view
+      return getVideoView();
+    } else if (UrlChecker.isPlainText(widget.item.url)) {
+      // If it's plain text, show text view
+      return getTextView();
+    } else {
+      return const Center(child: Text('Unsupported content type'));
+    }
   }
 
+  // Widget to display video content
   Widget getVideoView() {
     return Stack(
       fit: StackFit.expand,
       children: [
-        _chewieController != null &&
-                _chewieController!.videoPlayerController.value.isInitialized
+        _videoPlayerController != null && _videoPlayerController!.value.isInitialized
             ? FittedBox(
-                fit: BoxFit.cover,
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  child: GestureDetector(
-                    onDoubleTap: () {
-                      if (!widget.item.isLiked) {
-                        _liked = true;
-                        if (widget.onLike != null) {
-                          widget.onLike!(widget.item.url);
-                        }
-                        setState(() {});
-                      }
-                    },
-                    child: Chewie(
-                      controller: _chewieController!,
-                    ),
-                  ),
-                ),
-              )
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 10),
-                  Text('Loading...')
-                ],
-              ),
-        if (_liked)
-          const Center(
-            child: LikeIcon(),
+          fit: BoxFit.cover,
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: GestureDetector(
+              onDoubleTap: () {
+                if (!widget.item.isLiked) {
+                  _liked = true;
+                  widget.onLike?.call(widget.item.url);
+                  setState(() {});
+                }
+              },
+              child: Chewie(controller: _chewieController!),
+            ),
           ),
+        )
+            : const Center(child: CircularProgressIndicator()),
+        if (_liked) const Center(child: LikeIcon()),
         if (widget.showProgressIndicator)
           Positioned(
             bottom: 0,
             width: MediaQuery.of(context).size.width,
             child: VideoProgressIndicator(
-              _videoPlayerController,
+              _videoPlayerController!,
               allowScrubbing: false,
               colors: const VideoProgressColors(
                 backgroundColor: Colors.blueGrey,
@@ -140,7 +137,60 @@ class _ReelsPageState extends State<ReelsPage> {
           onShare: widget.onShare,
           showVerifiedTick: widget.showVerifiedTick,
           item: widget.item,
-        )
+        ),
+      ],
+    );
+  }
+
+  // Widget to display image content
+  Widget getImageView() {
+    print(widget.item.url);
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Image.network(
+          widget.item.url,
+          fit: BoxFit.cover,
+          width: double.infinity,
+          height: double.infinity,
+        ),
+        ScreenOptions(
+          onClickMoreBtn: widget.onClickMoreBtn,
+          onComment: widget.onComment,
+          onFollow: widget.onFollow,
+          onLike: widget.onLike,
+          onShare: widget.onShare,
+          showVerifiedTick: widget.showVerifiedTick,
+          item: widget.item,
+        ),
+      ],
+    );
+  }
+
+  // Widget to display text content
+  Widget getTextView() {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              widget.item.url,
+              style: const TextStyle(fontSize: 18),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+        ScreenOptions(
+          onClickMoreBtn: widget.onClickMoreBtn,
+          onComment: widget.onComment,
+          onFollow: widget.onFollow,
+          onLike: widget.onLike,
+          onShare: widget.onShare,
+          showVerifiedTick: widget.showVerifiedTick,
+          item: widget.item,
+        ),
       ],
     );
   }

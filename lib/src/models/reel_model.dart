@@ -1,4 +1,4 @@
-import 'package:reels_viewer/reels_viewer.dart';
+import 'package:flutter_reels/flutter_reels.dart';
 
 class ReelModel {
   final String? id;

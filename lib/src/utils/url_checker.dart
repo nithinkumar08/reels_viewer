@@ -11,4 +11,8 @@ class UrlChecker {
   static bool isValid(String url){
     return urlCheckReg.hasMatch(url);
   }
+  
+  static bool isPlainText(String text) {
+    return !isValid(text) && !isImageUrl(text);
+  }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:reels_viewer/reels_viewer.dart';
-import 'package:reels_viewer/src/components/user_profile_image.dart';
-import 'package:reels_viewer/src/utils/convert_numbers_to_short.dart';
+import 'package:flutter_reels/flutter_reels.dart';
+import 'package:flutter_reels/src/components/user_profile_image.dart';
+import 'package:flutter_reels/src/utils/convert_numbers_to_short.dart';
 
 import 'comment_bottomsheet.dart';
 
